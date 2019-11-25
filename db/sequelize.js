@@ -1,30 +1,16 @@
 const Sequelize = require("sequelize");
-const {
-  DB_HOST,
-  DB_USERNAME,
-  DB_PASSWORD,
-  DB_PORT,
-  DB_NAME
-} = require("../config");
-// console.log(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_PORT, DB_NAME);
 
 // uncomment for  localhost
 var pg = require("pg");
-pg.defaults.ssl = true;
+pg.defaults.ssl = false;
 //
-let config = null;
-let host = null;
-let dialect = null;
-let username = null;
-let password = null;
-let database = null;
-let port = null;
-dialect = "postgres";
-host = DB_HOST;
-username = DB_USERNAME;
-password = DB_PASSWORD;
-database = DB_NAME;
-port = DB_PORT;
+let username= "postgres";
+let password= "postgres";
+let database= "service-app";
+let host= "127.0.0.1";
+let dialect = "postgres";
+let port= "5432"
+
 
 //DB CONNECTION
 const sequelize = new Sequelize(database, username, password, {

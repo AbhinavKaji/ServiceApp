@@ -1,0 +1,14 @@
+sequelize model:create --name User --attributes 'name:string email:string bio:text'
+
+sequelize migration:create --name users
+sequelize-cli db:migrate:undo
+
+sequelize db:migrate
+
+
+,tokens: [{
+        token: {
+            allowNull: false,
+            type: Sequelize.STRING
+        }
+    }]
