@@ -1,4 +1,9 @@
 const express = require('express')
+const graphqlHttp = require("express-graphql");
+const graphqlSchema = require("./graphql/schema");
+const graphqlResolver = require("./graphql/resolvers");
+const sequelize = require("./db/sequelize");
+
 const app = express()
 const port = process.env.PORT || 3000
 
@@ -10,15 +15,17 @@ app.get("/test", (req, res) => {
     });
 });
 
-// app.use(
-//     "/graphql",
-//     graphqlHttp({
-//       schema: graphqlSchema,
-//       rootValue: graphqlResolver,
-//       graphiql: true
-//     })
-// );
+app.use(
+    "/graphql",
+    graphqlHttp({
+      schema: graphqlSchema,
+      rootValue: graphqlResolver,
+      graphiql: true
+    })
+);
 
-app.listen(port, () => {
-    console.log(`server started at http://localhost:${port}`)
-});
+sequelize.sync().then(() => {
+    app.listen(port, () =>
+      console.log(`Apollo server started at http://localhost:${port}`)
+    );
+  });
