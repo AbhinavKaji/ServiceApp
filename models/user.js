@@ -32,14 +32,11 @@ module.exports = (sequelize, DataTypes) => {
 
       return user
   }
-  User.generateAuthToken = async function () {
-      const user = this
-      const token = jwt.sign({ id: user.id.toString() }, 'thisismynewcourse')
-
-      user.tokens = user.tokens.concat({ token })
-      await user.save()
-
-      return token
+  User.generateAuthToken = async function (user) {
+      const token = jwt.sign({ id: user.id.toString(),email: user.email }, 'thisismynewcourse',{
+        expiresIn: '1h'
+      });
+      return token;
   }
   // const user = await User.findByCredentials(req.body.email, req.body.password)
   // User.belongsTo(Role, { as: "role", foreignKey: "roleId" });
