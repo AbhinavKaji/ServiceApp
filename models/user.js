@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   });
   User.findByCredentials = async (email, password) => {
-      const user = await User.findOne({ email })
+      const user = await User.findOne({ where: {email: email} });
 
       if (!user) {
           throw new Error('Unable to login')
@@ -29,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
       if (!isMatch) {
           throw new Error('Unable to login')
       }
-
       return user
   }
   User.generateAuthToken = async function (user) {
