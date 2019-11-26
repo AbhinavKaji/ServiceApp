@@ -7,15 +7,20 @@ module.exports = buildSchema(`
         tokenExpiration:Int!
     }
 
-    type RootQuery{
-        login(email:String!,password:String!):AuthData,
+    type Message {
+        message:String
     }
 
+    type RootQuery{
+        welcome:Message,
+    }
     type RootMutation{
-        
+        welcome:Message,
+        login(email:String!,password:String!):AuthData
     }
     schema{
         query:RootQuery,
         mutation:RootMutation
+
     }
 `);

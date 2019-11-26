@@ -15,8 +15,6 @@ app.get("/test", (req, res) => {
     });
 });
 
-app.use(isAuth);
-
 app.use(
     "/graphql",
     graphqlHttp({
@@ -25,6 +23,7 @@ app.use(
       graphiql: true
     })
 );
+app.use(isAuth);
 
 sequelize.sync().then(() => {
     app.listen(port, () =>
