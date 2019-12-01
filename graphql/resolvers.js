@@ -16,6 +16,18 @@ module.exports = {
         const token = await User.generateAuthToken(user);
         return { userId : user.id , token , tokenExpiration : 1 };
     },
+    logOut: async function({},req) {
+        try {
+            if(!req.isAuth){
+                throw new Error("unautho");
+            }
+            req.isAuth = false;
+            req.userId = null;
+            return true;
+        } catch (error) {
+            return false;
+        }
+    },
     createUser: async function({input}){
         
         const existingUser = await User.findOne({ where: { email: input.email } });

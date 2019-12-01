@@ -24,7 +24,8 @@ module.exports = buildSchema(`
     type RootQuery{
         welcome:Message,
         login(email:String!,password:String!):AuthData,
-        getAllUser:[User]
+        getAllUser:[User],
+        logOut:Boolean
     }
     type RootMutation{
         createUser(input:UserInput):User
