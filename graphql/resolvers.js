@@ -51,11 +51,14 @@ module.exports = {
         }
         
     },
-    getAllUser: async function(req) {
+    getAllUser: async function({},req) {
         if(!req.isAuth){
             throw new Error("unautho");
         }
         const list = await User.findAll();
+        list.forEach(element => {
+            element.password = null;
+        });
         return list;
     }
 
