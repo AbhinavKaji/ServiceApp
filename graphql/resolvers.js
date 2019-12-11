@@ -4,6 +4,9 @@ const DataTypes = Sequelize.DataTypes;
 const bcrypt = require('bcryptjs');
 let sequelize = require('../db/sequelize');
 const User = require('../models/user')(sequelize, DataTypes);
+// var messagebird = require('messagebird')('jAr0jrNGmfYtjQVjpIC9G6tTL');
+const speakeasy = require("speakeasy");
+
 module.exports = {
     welcome:async function(args,req) {
         // if(!req.isAuth){
@@ -36,6 +39,7 @@ module.exports = {
         }
         const user = new User({
             email:input.email,
+            phoneNo:input.phoneNo,
             name:input.name,
             password: input.password
         });
@@ -45,21 +49,78 @@ module.exports = {
             }
 
             const result = await user.save();
-            return{ name: result.name,email: result.email, password:null, id:result.id };
+            // return{ name: result.name,email: result.email, password:null, id:result.id };
+            // const user = await User.findByCredentials(input.email,input.password);
+        const token = await User.generateAuthToken(result);
+        return { userId : result.id , token , tokenExpiration : 1 }
         } catch (error) {
             throw new Error("user not created");
         }
         
     },
     getAllUser: async function({},req) {
-        if(!req.isAuth){
-            throw new Error("unautho");
-        }
+        // if(!req.isAuth){
+        //     throw new Error("unautho");
+        // }
         const list = await User.findAll();
         list.forEach(element => {
-            element.password = null;
+            // element.password = null;
         });
         return list;
+    },
+    generateOTPSecret:async function({}) {
+        var secret = speakeasy.generateSecret({length:20});
+        return (secret.base32);
+    },
+    SendOtpCode: async function({phone,secret},req) {
+        // const a = messagebird.verify.create(phone,{
+        //     template:`Your verification code is %token`
+        // },function(err,response) {
+        //     if(err){
+        //         console.log("msg nor send",err)
+        //     }
+        //     else{
+        //         console.log (response.id);
+        //         return true;
+        //     }
+        // })
+        // console.log(a);
+        // return true;
+        const token = speakeasy.totp({
+            secret:secret,
+            encoding:"base32"
+        })
+        var remaining = 30-Math.floor((new Date().getTime()/1000 % 30));
+        return {token,remaining};
+    },
+    verifyOtpCode: async function({OTPCode,secret},req) {
+        var verifyIt= speakeasy.totp.verify({
+            secret: secret,
+            encoding:"base32",
+            token: OTPCode,
+            window:0
+        }) 
+        if(verifyIt == "false"){
+            throw new Error("not verified user");
+        }
+        return verifyIt;
+    },
+    verifyOtpForLogin: async function({OTPCode,secret,phone},req) {
+        var verifyIt= speakeasy.totp.verify({
+            secret: secret,
+            encoding:"base32",
+            token: OTPCode,
+            window:0
+        }) 
+        if(verifyIt == "false"){
+            throw new Error("not verified user");
+        }
+        const user = await User.findOne({ where: { phoneNo: phone } });
+        if(!user){
+            throw new Error("user does not exist");
+        }
+        const token = await User.generateAuthToken(user);
+        return { userId : result.id , token , tokenExpiration : 1 }
     }
 
 };
