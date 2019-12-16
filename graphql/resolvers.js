@@ -80,11 +80,11 @@ module.exports = {
             const serviceprovider = await Serviceproviderdetails.findOne({where:{ServiceProviderId: id}})
             .then(function(obj){
                 if(obj){
-                    await Serviceproviderdetails.update({
+                    Serviceproviderdetails.update({
                         ...ServiceProviderDetailsInput
                     });
                 }
-                await Serviceproviderdetails.create({
+                Serviceproviderdetails.create({
                     ...ServiceProviderDetailsInput
                 })
             });

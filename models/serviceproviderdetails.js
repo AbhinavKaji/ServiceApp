@@ -1,4 +1,7 @@
 'use strict';
+const Sequelize = require("sequelize");
+const DataTypes = Sequelize.DataTypes;
+let sequelize = require('../db/sequelize');
 const User = require('../models/user')(sequelize, DataTypes);
 module.exports = (sequelize, DataTypes) => {
   const ServiceProviderDetails = sequelize.define('ServiceProviderDetails', {
