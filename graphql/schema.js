@@ -23,6 +23,31 @@ module.exports = buildSchema(`
         phoneNo: String,
         password: String!
     }
+
+    input ServiceProviderDetailsInput{
+        experience:Int,
+        Charges:String,
+        AllocatedRegion:String,
+        Description:String,
+        workingPlatform:[String]
+    }
+    type ServiceProviderDetails{
+        id:ID,
+        UserId:Int,
+        experience:Int,
+        Charges:String,
+        AllocatedRegion:String,
+        Description:String,
+        workingPlatform:[workingPlatform]
+    }
+    type workingPlatform{
+        id:ID,
+        ServiceProviderId:Int,
+        platform:String
+    }
+    input workingPlatformInput{
+        platform:String
+    }
     type OTPData{
         token:String,
         remaining:String
@@ -35,6 +60,8 @@ module.exports = buildSchema(`
     }
     type RootMutation{
         createUser(input:UserInput):AuthData,
+        getServiceProvider(id:ID):ServiceProviderDetails,
+        updateServiceProvider(id:ID,input:ServiceProviderDetailsInput):Message,
         SendOtpCode(phone:String,secret:String):OTPData,
         verifyOtpCode(OTPCode:String,secret:String):Boolean,
         verifyOtpForLogin(OTPCode:String,secret:String,phone:String):AuthData,

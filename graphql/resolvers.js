@@ -4,6 +4,8 @@ const DataTypes = Sequelize.DataTypes;
 const bcrypt = require('bcryptjs');
 let sequelize = require('../db/sequelize');
 const User = require('../models/user')(sequelize, DataTypes);
+const Serviceproviderdetails = require('../models/serviceproviderdetails')(sequelize, DataTypes);
+const WorkingPlatform = require('../models/workingplatform')(sequelize, DataTypes);
 // var messagebird = require('messagebird')('jAr0jrNGmfYtjQVjpIC9G6tTL');
 const speakeasy = require("speakeasy");
 
@@ -57,6 +59,58 @@ module.exports = {
             throw new Error("user not created");
         }
         
+    },
+    getServiceProvider: async function({id},req){
+        try {
+            const serviceProvider = await Serviceproviderdetails.findOne({where:{ServiceProviderId: id}});
+            if(!serviceProvider){
+                console.log("service provider not found");
+            }
+            const platform = await WorkingPlatform.findAll({where:{ServiceProviderId: serviceProvider.id}});
+            let result = Object.assign(serviceProvider, {
+                WorkingPlatform: platform
+            });
+            return result;
+        } catch (error) {
+            return error;
+        }
+    },
+    updateServiceProvider: async function({id,ServiceProviderDetailsInput},req){
+        try {
+            const serviceprovider = await Serviceproviderdetails.findOne({where:{ServiceProviderId: id}})
+            .then(function(obj){
+                if(obj){
+                    await Serviceproviderdetails.update({
+                        ...ServiceProviderDetailsInput
+                    });
+                }
+                await Serviceproviderdetails.create({
+                    ...ServiceProviderDetailsInput
+                })
+            });
+            if (ServiceProviderDetailsInput.workingPlatform.length > 0) {
+                await WorkingPlatform.destroy({
+                  where: {
+                    ServiceProviderId:serviceprovider.id
+                  }
+                });
+                let result = ServiceProviderDetailsInput.workingPlatform.map(x => {
+                  return new Promise(async resolve => {
+                    const WP = await WorkingPlatform.create({
+                        ServiceProviderId:serviceprovider.id,
+                        platform:x
+                    });
+                    resolve(WP);
+                  });
+                });
+                Promise.all(result).then(WP => {
+                  console.log("saftey training created successfully");
+                });
+            }
+        return { message: "true" };
+        } catch (error) {
+            return error;
+        }
     },
     getAllUser: async function({},req) {
         // if(!req.isAuth){
