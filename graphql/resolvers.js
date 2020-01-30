@@ -6,6 +6,7 @@ let sequelize = require('../db/sequelize');
 const User = require('../models/user')(sequelize, DataTypes);
 const Serviceproviderdetails = require('../models/serviceproviderdetails')(sequelize, DataTypes);
 const WorkingPlatform = require('../models/workingplatform')(sequelize, DataTypes);
+const Bookingtrace = require('../models/bookingtrace')(sequelize, DataTypes);
 // var messagebird = require('messagebird')('jAr0jrNGmfYtjQVjpIC9G6tTL');
 const speakeasy = require("speakeasy");
 
@@ -111,6 +112,30 @@ module.exports = {
         } catch (error) {
             return error;
         }
+    },
+    RequestAPI: async function({input},req){
+        if(!req.isAuth){
+            throw new Error("unautho");
+        }
+        var datetime = new Date();
+        var currentDT= (datetime.toISOString().slice(0,19));
+        try {
+            const serviceprovider = await Serviceproviderdetails.findOne({where:{ServiceProviderId: input.serviceProviderId}});
+            const traceRequest = await Bookingtrace.create({
+                UserId : req.UserId,
+                serviceProviderId: input.serviceProviderId,
+                RequestAcceptStatus: 'false',
+                ScheduledDate: input.ScheduledDate,
+                Location: input.Location,
+                ServiceType: input.ServiceType,
+                ServiceCharge: serviceprovider.Charges,
+                RequestedDate: currentDT
+            })
+            return { message: "true" };
+        } catch (error) {
+            return { message: "false" };
+        }
+
     },
     getAllUser: async function({},req) {
         // if(!req.isAuth){

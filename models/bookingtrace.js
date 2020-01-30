@@ -10,7 +10,10 @@ module.exports = (sequelize, DataTypes) => {
     ServiceProviderId: DataTypes.INTEGER,
     RequestedDate: DataTypes.DATE,
     RequestAcceptStatus: DataTypes.BOOLEAN,
-    ScheduledDate: DataTypes.DATE
+    ScheduledDate: DataTypes.DATE,
+    Location: DataTypes.STRING,
+    ServiceCharge: DataTypes.INTEGER,
+    ServiceType: DataTypes.STRING
   }, {});
   BookingTrace.associate = function(models) {
     models.belongsTo(User, {

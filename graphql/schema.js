@@ -17,11 +17,35 @@ module.exports = buildSchema(`
         phoneNo: String,
         password: String
     }
+
     input UserInput{
         name: String!,
         email: String!,
         phoneNo: String,
         password: String!
+    }
+
+    input RequestInput{
+        serviceProviderId: Int,
+        ScheduledDate: String,
+        Location: String,
+        ServiceType: String
+    }
+
+    type Request{
+        UserId: Int,
+        serviceProviderId: Int,
+        RequestedDate: String,
+        RequestAcceptStatus: Boolean,
+        ScheduledDate: String,
+        Location: String,
+        ServiceCharge: String,
+        ServiceType: String
+    }
+
+    input RequestStatusUpdate{
+        serviceProviderId: Int,
+        RequestAcceptStatus: Boolean
     }
 
     input ServiceProviderDetailsInput{
@@ -31,6 +55,7 @@ module.exports = buildSchema(`
         Description:String,
         workingPlatform:[String]
     }
+
     type ServiceProviderDetails{
         id:ID,
         UserId:Int,
@@ -40,24 +65,29 @@ module.exports = buildSchema(`
         Description:String,
         workingPlatform:[workingPlatform]
     }
+
     type workingPlatform{
         id:ID,
         ServiceProviderId:Int,
         platform:String
     }
+
     input workingPlatformInput{
         platform:String
     }
+
     type OTPData{
         token:String,
         remaining:String
     }
+
     type RootQuery{
         welcome:Message,
         login(email:String!,password:String!):AuthData,
         getAllUser:[User],
         logOut:Boolean
     }
+
     type RootMutation{
         createUser(input:UserInput):AuthData,
         getServiceProvider(id:ID):ServiceProviderDetails,
@@ -65,12 +95,13 @@ module.exports = buildSchema(`
         SendOtpCode(phone:String,secret:String):OTPData,
         verifyOtpCode(OTPCode:String,secret:String):Boolean,
         verifyOtpForLogin(OTPCode:String,secret:String,phone:String):AuthData,
-        generateOTPSecret:String
-        
+        generateOTPSecret:String,
+        RequestAPI(input:RequestInput):Message
     }
+
     schema{
         query:RootQuery,
         mutation:RootMutation
-
     }
+    
 `);

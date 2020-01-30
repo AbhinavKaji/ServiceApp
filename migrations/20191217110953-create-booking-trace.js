@@ -23,6 +23,15 @@ module.exports = {
       ScheduledDate: {
         type: Sequelize.DATE
       },
+      Location:{
+        type: Sequelize.STRING
+      },
+      ServiceCharge:{
+        type: Sequelize.INTEGER
+      },
+      ServiceType:{
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
