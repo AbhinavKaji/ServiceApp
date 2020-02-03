@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 let sequelize = require('../db/sequelize');
 const User = require('../models/user')(sequelize, DataTypes);
 const Serviceproviderdetails = require('../models/serviceproviderdetails')(sequelize, DataTypes);
+const ServiceproviderReview = require('../models/serviceproviderreview')(sequelize, DataTypes);
 const WorkingPlatform = require('../models/workingplatform')(sequelize, DataTypes);
 const Bookingtrace = require('../models/bookingtrace')(sequelize, DataTypes);
 // var messagebird = require('messagebird')('jAr0jrNGmfYtjQVjpIC9G6tTL');
@@ -200,6 +201,54 @@ module.exports = {
         }
         const token = await User.generateAuthToken(user);
         return { userId : result.id , token , tokenExpiration : 1 }
-    }
+    },
+    provideReview: async function({input},req){
+        if(!req.isAuth){
+            throw new Error("unautho");
+        }
+        try {
+            const exist = await ServiceproviderReview.findAll({where:{ServiceProviderId: id ,UserId : req.UserId }});
+            if(exist){
+                throw new Error("already done");
+            }
 
+            var avg = (input.knowledge+input.skill+input.CustomerSatisfaction)/3;
+            const createReview = await ServiceproviderReview.create({
+                ServiceProviderId:input.ServiceProviderId,
+                userId:req.userId,
+                reviewDate:input.reviewDate,
+                knowledge:input.knowledge,
+                skill:input.skill,
+                CustomerSatisfaction:input.CustomerSatisfaction,
+                AverageReview:avg,
+                comment:input.comment
+        });
+        return { message: "success" };
+        } catch (error) {
+            return { message: error };
+        }
+    },
+    getAllReviewBySPID: async function({id}){
+        try {
+            const review = await ServiceproviderReview.findAll({where:{ServiceProviderId: id}});
+            return review;
+        } catch (error) {
+            throw new Error("error in getAllReviewBySPID");
+        }
+    },
+    getAverageRatebySPID: async function(){
+        try {
+            const review = await ServiceproviderReview.findAll({where:{ServiceProviderId: id}});
+            const countAll = Object.keys(review).length;
+            var sum = 0;
+            review.forEach(element => {
+                sum= sum+element.AverageReview;
+            });
+            AverageRe = sum/countAll;
+            return { message: AverageRe };
+        } catch (error) {
+            return { message: error };
+        }
+        
+    }
 };

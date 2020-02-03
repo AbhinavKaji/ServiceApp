@@ -31,7 +31,24 @@ module.exports = buildSchema(`
         Location: String,
         ServiceType: String
     }
-
+    type Review{
+        ServiceProviderId: Int,
+        userId: Int,
+        reviewDate: String,
+        knowledge: Int,
+        skill: Int,
+        CustomerSatisfaction: Int,
+        AverageReview: String,
+        comment: String
+    }
+    input ReviewInput{
+        ServiceProviderId: Int,
+        reviewDate: String,
+        knowledge: Int,
+        skill: Int,
+        CustomerSatisfaction: Int,
+        comment: String
+    }
     type Request{
         UserId: Int,
         serviceProviderId: Int,
@@ -97,6 +114,9 @@ module.exports = buildSchema(`
         verifyOtpForLogin(OTPCode:String,secret:String,phone:String):AuthData,
         generateOTPSecret:String,
         RequestAPI(input:RequestInput):Message
+        provideReview(input:ReviewInput):Message
+        getAllReviewBySPID(id:ID):[Review]
+        getAverageRatebySPID(id:ID):Message
     }
 
     schema{
